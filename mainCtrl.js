@@ -57,90 +57,89 @@ angular.module("decisions")
 
 
   $scope.makeGraph = function(){
-    var margin = {top: 20, right:20, bottom:30, left:50}
-    var height = 900 - margin.right - margin.left;
-    var width = 400 - margin.top - margin.bottom;
+    var margin = {top: 30, right:20, bottom:30, left:50};
+    var height = 400 - margin.top - margin.bottom;
+    var width = 900 - margin.right - margin.left;
 
-    var svg= d3.select('.barchart')
-    .append('svg')
-    .attr('width', width)
-    .attr('height', height);
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
 
-    var xScale = d3.scale.linear()
-    .domain( [0, height] )
-    .range( [0, width] );
-
-    var yScale = d3.scale.linear()
-        .domain([0, 1 ])
-        .range( [0, h] );
+    var y = d3.scale.linear()
+        .domain([0,1])
+        .range([height, 0]);
 
     var xAxis = d3.svg.axis()
-        .scale(xScale)
-        .ticks(0)
+        .scale(x)
+        .orient("bottom");
 
     var yAxis = d3.svg.axis()
-        .scale(yScale)
+        .scale(y)
         .orient("left")
-        .ticks(0)
+        .ticks(5, "%");
+
+    var svg = d3.select(".barchart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    x.domain($scope.allSelection.map(function(d) { return d.name; }));
 
     svg.append("g")
-        .attr("transform",
-        "translate(5,0)")
-        .call(yAxis);
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-    svg.select('svg')
-    .selectAll('.bars')
-    .data($scope.calcvalues)
-    .enter()
-    .append('div')
-    .attr('class', function(d, i){
-      return 'bars' + i;
-    })
-    .style('width', function(d){
-      var num = $scope.calcvalues.length;
-      return (1/num*100)-2 + "%";
-    })
-    .style('height', function(d){
-      return 400 + "px";
-    })
-    .style("margin", "1%")
-    .style("display", "inline-block");
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".5em")
+        .style("text-anchor", "end")
+        .text("Score");
 
 
-    for (var i = 0; i < $scope.calcvalues.length; i++){
 
-      var offset = 400 * (1 - $scope.allSelection[i].total) ;
-      console.log(offset, "offset");
-      d3.select('.bars' + i)
-      .selectAll('.bar' + i)
-      .data($scope.calcvalues[i])
-      .enter()
-      .append('div')
-      .attr('class', 'bar' + i)
-      .style('width', function(d){
-        return 100 + "%";
-      })
-      .style('background-color', function(d,i){
-        return d3.hsl(i/$scope.calcvalues.length*360,0.5,0.5);
-      })
-      .style('height', function(d){
-        console.log(d);
-        return 0 + "px";
-      })
-      .style('position',"relative")
-      .style("top",function(d,j){
-        return (offset) + "px";
-      });
 
-      d3.select('.bars' + i)
-      .selectAll('.bar' + i)
-      .data($scope.calcvalues[i])
-      .transition()
-      .duration('500')
-      .style("height", function(d){
-        console.log(d);
-          return d * 400 + "px";
-      });
+    for (var i = 0; i < $scope.allSelection.length; i++){
+      svg.selectAll('svg')
+        .data($scope.calcvalues[i])
+        .enter()
+        .append('rect')
+        .attr('class', function(d, i){
+          return 'bars' + i;
+        })
+        .attr('width', function(d){
+          return (1/$scope.allSelection.length*width) - 40;
+        })
+        .attr("height", function(d,i){
+          return d*height;
+        })
+        .attr("fill", function(d,i){
+          return d3.hsl(i/$scope.allSelection.length*360, 0.5, 0.5);
+        })
+        .attr("x", function(d,j){
+          return (i/$scope.allSelection.length*width) + 20;
+        })
+        .attr("y", function(d,j){
+          // var total = 0;
+          // for (var k = 0; k <= i; k++){
+          //   total += $scope.calcvalues[i][k];
+          // }
+          return height - d*height;
+        });
+
+      // d3.select('.bars' + i)
+      // .selectAll('.bar' + i)
+      // .data($scope.calcvalues[i])
+      // .transition()
+      // .duration('500')
+      // .attr("height", function(d){
+      //     return d + "px";
+      // });
     }
 
 
