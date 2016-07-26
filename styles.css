@@ -19,9 +19,10 @@ input {
 td {
   border: 1px solid #000;
   width: 130px;
+  height: 46px;
 }
 
-table {
+.table1 {
   margin: auto;
 }
 
@@ -36,7 +37,7 @@ table {
 }
 
 .barchart {
-  width: 60vw;
+  width: 900px;
   height: 400px;
   border: 1px solid black;
   padding: 10px;

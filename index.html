@@ -18,11 +18,9 @@
       <h3>Decision Selections</h3>
       <form ng-submit="addSelection(selection)">
         <input type="text" ng-model="selection.name" placeholder="Add selections">
-        <input type="submit">
       </form>
       <form ng-submit="addCriteria(criteria)">
         <input type="text" ng-model="criteria.name" placeholder="Add criteria">
-        <input type="submit">
       </form>
 
       <h3>Grid</h3>
@@ -44,11 +42,27 @@
             <td>Criteria/<br>Selection</td><td ng-repeat="criteriaLabel in allCriteria"><input type="text" ng-model="criteriaLabel.name"></td>
           </tr>
         </table>
-        <button type="button" ng-click="runMatrix()">Click here for results</button>
-        <table>
+        <table class="results">
+          <tr ng-repeat="thing in allSelection">
+            <td>
+              {{thing.name}}
+            </td>
+          </tr>
+        </table>
+        <table class="results">
           <tr ng-repeat="value in values">
             <td ng-repeat="val in value track by $index">
               <input type="text" ng-model="value[$index]">
+            </td>
+          </tr>
+        </table>
+        <br>
+        <button type="button" ng-click="runMatrix()">Click here for results</button>
+        <br>
+        <table class="results">
+          <tr ng-repeat="thing in allSelection">
+            <td>
+              {{thing.name}}
             </td>
           </tr>
         </table>
@@ -60,9 +74,9 @@
           </tr>
         </table>
         <table class="results">
-          <tr ng-repeat="oneSelection in allSelection">
+          <tr ng-repeat="otherthing in allSelection">
             <td>
-              {{oneSelection.total}}
+              {{otherthing.total}}
             </td>
           </tr>
         </table>

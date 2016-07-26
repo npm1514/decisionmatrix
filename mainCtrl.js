@@ -10,9 +10,9 @@ angular.module("decisions")
 
   $scope.addSelection = function(selection){
     if (selection.name){
-      $scope.values.push([selection.name]);
-      $scope.calcvalues.push([selection.name]);
-      $scope.allSelection.push([{name: selection.name, total: null}]);
+      $scope.allSelection.push({name: selection.name, total: 0});
+      $scope.values.push([]);
+      $scope.calcvalues.push([]);
       $scope.selection = {};
     }
   };
@@ -22,14 +22,14 @@ angular.module("decisions")
       var crit = {
         name: criteria.name,
         direction: "+",
-        min: 1,
+        min: 0,
         max: 10,
         importance: 50
       };
       $scope.allCriteria.push(crit);
       for (var i = 0; i < $scope.values.length; i++) {
-        $scope.values[i].push([undefined]);
-        $scope.calcvalues[i].push([undefined]);
+        $scope.values[i].push([null]);
+        $scope.calcvalues[i].push([null]);
       }
       $scope.criteria = {};
     }
@@ -41,11 +41,11 @@ angular.module("decisions")
   $scope.runMatrix = function() {
     for (var i = 0; i < $scope.values.length; i++) {
       var total = 0;
-      for (var j = 1; j < $scope.values[i].length; j++) {
-        if($scope.allCriteria[j-1].direction === "+"){
-          $scope.calcvalues[i][j] = (($scope.values[i][j]-$scope.allCriteria[j-1].min)/($scope.allCriteria[j-1].max-$scope.allCriteria[j-1].min))*($scope.allCriteria[j-1].importance/100);
-        } else if ($scope.allCriteria[j-1].direction === "-"){
-          $scope.calcvalues[i][j] = (($scope.allCriteria[j-1].max - $scope.values[i][j])/($scope.allCriteria[j-1].max-$scope.allCriteria[j-1].min))*($scope.allCriteria[j-1].importance/100);
+      for (var j = 0; j < $scope.values[i].length; j++) {
+        if($scope.allCriteria[j].direction === "+"){
+          $scope.calcvalues[i][j] = (($scope.values[i][j]-$scope.allCriteria[j].min)/($scope.allCriteria[j].max-$scope.allCriteria[j].min))*($scope.allCriteria[j].importance/100);
+        } else if ($scope.allCriteria[j].direction === "-"){
+          $scope.calcvalues[i][j] = (($scope.allCriteria[j].max - $scope.values[i][j])/($scope.allCriteria[j].max-$scope.allCriteria[j].min))*($scope.allCriteria[j].importance/100);
         }
         total += $scope.calcvalues[i][j]
       }
@@ -57,8 +57,38 @@ angular.module("decisions")
 
 
   $scope.makeGraph = function(){
+    var margin = {top: 20, right:20, bottom:30, left:50}
+    var height = 900 - margin.right - margin.left;
+    var width = 400 - margin.top - margin.bottom;
 
-    d3.select('.barchart')
+    var svg= d3.select('.barchart')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+    var xScale = d3.scale.linear()
+    .domain( [0, height] )
+    .range( [0, width] );
+
+    var yScale = d3.scale.linear()
+        .domain([0, 1 ])
+        .range( [0, h] );
+
+    var xAxis = d3.svg.axis()
+        .scale(xScale)
+        .ticks(0)
+
+    var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+        .ticks(0)
+
+    svg.append("g")
+        .attr("transform",
+        "translate(5,0)")
+        .call(yAxis);
+
+    svg.select('svg')
     .selectAll('.bars')
     .data($scope.calcvalues)
     .enter()
