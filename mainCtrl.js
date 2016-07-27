@@ -57,6 +57,7 @@ angular.module("decisions")
 
 
   $scope.makeGraph = function(){
+
     var margin = {top: 30, right:20, bottom:30, left:50};
     var height = 400 - margin.top - margin.bottom;
     var width = 900 - margin.right - margin.left;
@@ -79,6 +80,7 @@ angular.module("decisions")
 
     var svg = d3.select(".barchart")
         .append("svg")
+        .attr("class", "svgthing")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -101,9 +103,6 @@ angular.module("decisions")
         .style("text-anchor", "end")
         .text("Score");
 
-
-
-
     for (var i = 0; i < $scope.allSelection.length; i++){
       svg.selectAll('svg')
         .data($scope.calcvalues[i])
@@ -125,11 +124,11 @@ angular.module("decisions")
           return (i/$scope.allSelection.length*width) + 20;
         })
         .attr("y", function(d,j){
-          // var total = 0;
-          // for (var k = 0; k <= i; k++){
-          //   total += $scope.calcvalues[i][k];
-          // }
-          return height - d*height;
+          var total = 0;
+          for (var k = 0; k < j; k++){
+            total += $scope.calcvalues[i][k];
+          }
+          return height - d*height - total*height;
         });
 
       // d3.select('.bars' + i)
