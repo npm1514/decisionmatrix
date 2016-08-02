@@ -57,6 +57,8 @@ angular.module("decisions")
 
 
   $scope.makeGraph = function(){
+    d3.select(".barchart svg")
+        .remove();
 
     var margin = {top: 30, right:20, bottom:30, left:50};
     var height = 400 - margin.top - margin.bottom;
